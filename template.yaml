@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  notify_hitokuchi
+
+  Sample SAM Template for notify_hitokuchi
+
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  NotifyHitokuchiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: notify_hitokuchi/
+      Handler: app.lambda_handler
+      Runtime: python3.7
+      Events:
+        NotifyHitokuchi:
+          Type: Schedule
+          Properties:
+            Schedule: cron(30 12 * * ? *)
