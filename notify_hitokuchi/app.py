@@ -1,10 +1,14 @@
 """友駿出走馬の情報通知."""
+import logging
 import time
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
 import line
 import settings
 import yushun
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
@@ -17,13 +21,20 @@ def lambda_handler(event, context):
     """
     del context
 
+    logger.info('start: event.time=%s', event["time"])
+
     today = get_jstdate_from_isoformat(event['time'])
 
     for horseid in settings.YUSHUN_HORSE_ID.split(';'):
         status = yushun.get_horse_latest_status(today, horseid)
+        logger.info(
+            'latest_status: horseid=%s, status_date=%s',
+            horseid, status['status_date'])
+
         if status['status_date'] == today:
             message = format_status(status)
             line.notify(settings.LINE_NOTIFY_ACCESS_TOKEN, message)
+
         time.sleep(1)
 
     return 'OK'
