@@ -1,4 +1,5 @@
 """友駿出走馬の情報通知."""
+import time
 from datetime import datetime, timezone, timedelta
 
 import line
@@ -23,6 +24,7 @@ def lambda_handler(event, context):
         if status['status_date'] == today:
             message = format_status(status)
             line.notify(settings.LINE_NOTIFY_ACCESS_TOKEN, message)
+        time.sleep(1)
 
     return 'OK'
 
