@@ -1,8 +1,11 @@
-"""友駿出走馬の情報通知."""
+"""一口出資馬の情報通知."""
 import logging
 import time
 from datetime import datetime, timedelta, timezone
 
+import mojimoji
+
+import carrot
 import line
 import settings
 import yushun
@@ -25,17 +28,15 @@ def lambda_handler(event, context):
 
     today = get_jstdate_from_isoformat(event['time'])
 
-    for horseid in settings.YUSHUN_HORSE_ID.split(';'):
-        status = yushun.get_horse_latest_status(today, horseid)
-        logger.info(
-            'latest_status: horseid=%s, status_date=%s',
-            horseid, status['status_date'])
+    yushun_statuses = yushun.get_horse_latest_statuses(today)
+    carrot_statuses = carrot.get_horse_latest_statuses()
+    statuses = yushun_statuses + carrot_statuses
 
+    for status in statuses:
         if status['status_date'] == today:
             message = format_status(status)
             line.notify(settings.LINE_NOTIFY_ACCESS_TOKEN, message)
-
-        time.sleep(1)
+            time.sleep(1)
 
     return 'OK'
 
@@ -67,7 +68,7 @@ def format_status(status):
         str -- 整形後の文字列
 
     """
-    result = f'{status["horsename"]}の近況更新\n'
+    result = f'{status["horse_name"]}の近況更新\n'
     result += status['status_date'].strftime('%y/%m/%d') + '\n'
-    result += status['status']
+    result += mojimoji.zen_to_han(status['status'], kana=False)
     return result

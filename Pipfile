@@ -12,8 +12,9 @@ autopep8 = "*"
 python-dotenv = "*"
 bs4 = "*"
 requests = "*"
-lxml = "*"
 retry = "*"
+html5lib = "*"
+mojimoji = "*"
 
 [requires]
 python_version = "3.7"
