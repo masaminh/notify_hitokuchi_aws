@@ -1,4 +1,5 @@
 """carrotclub.netから情報取得する."""
+import logging
 import time
 from datetime import datetime
 from urllib.parse import urljoin
@@ -7,6 +8,8 @@ from bs4 import BeautifulSoup
 from requests import Session
 
 import settings
+
+logger = logging.getLogger()
 
 
 def get_horse_latest_statuses():
@@ -30,7 +33,11 @@ def get_horse_latest_statuses():
     for link in myhorse_links:
         url = urljoin(response.url, link)
         last_status = get_horse_latest_status(session, url)
+        logger.info(
+            'carrot: latest_status: url=%s, status_date=%s',
+            url, last_status['status_date'])
         statuses.append(last_status)
+        time.sleep(1)
 
     return statuses
 
