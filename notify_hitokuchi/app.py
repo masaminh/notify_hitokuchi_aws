@@ -4,11 +4,14 @@ import time
 from datetime import datetime, timedelta, timezone
 
 import mojimoji
+from aws_xray_sdk.core import patch_all
 
 import carrot
 import line
 import settings
 import yushun
+
+patch_all()
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
