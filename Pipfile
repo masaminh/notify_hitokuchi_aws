@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 autopep8 = "*"
 flake8 = "*"
+boto3 = "==1.14.40"
 
 [packages]
 python-dotenv = "*"

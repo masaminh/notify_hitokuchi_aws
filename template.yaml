@@ -3,16 +3,18 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   notify_hitokuchi
 
-  Sample SAM Template for notify_hitokuchi
+  SAM Template for notify_hitokuchi
 
-Globals:
-  Function:
-    Timeout: 30
+Parameters:
+  Stage:
+    Type: String
+    Default: Dev
 
 Resources:
   NotifyHitokuchiFunction:
     Type: AWS::Serverless::Function
     Properties:
+      Timeout: 30
       CodeUri: notify_hitokuchi/
       Handler: app.lambda_handler
       Runtime: python3.7
@@ -21,3 +23,15 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: cron(30 12 * * ? *)
+      Environment:
+        Variables:
+          STAGE:
+            Ref: Stage
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            Effect: Allow
+            Action:
+              - sts:AssumeRole
+              - ssm:GetParameters
+            Resource: "*"
