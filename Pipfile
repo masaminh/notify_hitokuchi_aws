@@ -4,9 +4,9 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pydocstyle = "*"
-pylint = "*"
 autopep8 = "*"
+flake8 = "*"
+boto3 = "==1.14.40"
 
 [packages]
 python-dotenv = "*"
