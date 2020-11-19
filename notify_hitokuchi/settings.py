@@ -9,9 +9,9 @@ load_dotenv(join(dirname(__file__), '.env'))
 ssm = boto3.client('ssm')
 
 
-def _get_stage() -> str:
-    stage = os.environ.get('STAGE')
-    return stage if stage is not None else ''
+def _get_environment(varname: str) -> str:
+    var = os.environ.get(varname)
+    return var if var is not None else ''
 
 
 def _get_parameters(prefix: str, names: List[str]) -> Dict[str, str]:
@@ -23,14 +23,15 @@ def _get_parameters(prefix: str, names: List[str]) -> Dict[str, str]:
     return result
 
 
-prefix: str = f'/{_get_stage()}/NotifyHitokuchi/'
+prefix: str = f'/{_get_environment("STAGE")}/NotifyHitokuchi/'
 parameters = _get_parameters(prefix,
                              ['Carrot/UserId',
                               'Carrot/Password',
                               'Yushun/HorseId',
-                              'LineNotify/AccessToken'])
+                              'WebhookName'])
 
 CARROT_USERID = parameters['Carrot/UserId']
 CARROT_PASSWORD = parameters['Carrot/Password']
 YUSHUN_HORSE_ID = parameters['Yushun/HorseId']
-LINE_NOTIFY_ACCESS_TOKEN = parameters['LineNotify/AccessToken']
+SQS_URL = _get_environment('SQSURL')
+WEBHOOK_NAME = parameters['WebhookName']
