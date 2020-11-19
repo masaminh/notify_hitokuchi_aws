@@ -1,13 +1,12 @@
 """一口出資馬の情報通知."""
 import logging
-import time
 from datetime import datetime, timedelta, timezone
 
 import mojimoji
 from aws_xray_sdk.core import patch_all
 
 import carrot
-import line
+import sqs
 import settings
 import yushun
 
@@ -35,11 +34,10 @@ def lambda_handler(event, context):
     carrot_statuses = carrot.get_horse_latest_statuses()
     statuses = yushun_statuses + carrot_statuses
 
-    for status in statuses:
-        if status['status_date'] == today:
-            message = format_status(status)
-            line.notify(settings.LINE_NOTIFY_ACCESS_TOKEN, message)
-            time.sleep(1)
+    messages = [format_status(status)
+                for status in statuses if status['status_date'] == today]
+    if messages:
+        sqs.send(settings.SQS_URL, settings.WEBHOOK_NAME, messages)
 
     return 'OK'
 

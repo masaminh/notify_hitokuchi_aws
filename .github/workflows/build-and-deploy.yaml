@@ -25,4 +25,4 @@ jobs:
       - name: Build
         run: sam build --use-container
       - name: Deploy
-        run: sam deploy --stack-name notify-hitokuchi --s3-bucket ${{ secrets.AWS_SAM_BUCKET_NAME }} --s3-prefix notify-hitokuchi-prod --capabilities CAPABILITY_IAM --parameter-overrides "Stage=Prod"
+        run: sam deploy --stack-name notify-hitokuchi --s3-bucket ${{ secrets.AWS_SAM_BUCKET_NAME }} --s3-prefix notify-hitokuchi-prod --capabilities CAPABILITY_IAM --parameter-overrides "Stage=Prod SqsUrl=SlackIncomingWebHookAppProd-QUEUE-URL"

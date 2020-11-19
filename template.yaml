@@ -9,6 +9,8 @@ Parameters:
   Stage:
     Type: String
     Default: Dev
+  SqsUrl:
+    Type: String
 
 Resources:
   NotifyHitokuchiFunction:
@@ -27,6 +29,9 @@ Resources:
         Variables:
           STAGE:
             Ref: Stage
+          SQSURL:
+            Fn::ImportValue:
+              Ref: SqsUrl
       Policies:
         - Version: 2012-10-17
           Statement:
@@ -34,4 +39,5 @@ Resources:
             Action:
               - sts:AssumeRole
               - ssm:GetParameters
+              - sqs:SendMessage
             Resource: "*"
