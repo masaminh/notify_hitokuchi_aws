@@ -13,7 +13,7 @@ importlib-metadata==2.0.0
 jmespath==0.10.0
 jsonpickle==1.4.1
 mojimoji==0.0.11
-py==1.9.0
+py==1.10.0
 python-dateutil==2.8.1
 python-dotenv==0.15.0
 requests==2.24.0
