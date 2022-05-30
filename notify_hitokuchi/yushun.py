@@ -23,6 +23,9 @@ def get_horse_latest_statuses(today):
         list -- 近況のリスト
 
     """
+    if not settings.YUSHUN_ENABLED:
+        return []
+
     statuses = []
 
     for horseid in settings.YUSHUN_HORSE_ID.split(';'):
