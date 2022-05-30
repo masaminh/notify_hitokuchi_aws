@@ -19,10 +19,17 @@ def get_horse_latest_statuses():
         list -- 近況のリスト
 
     """
+    if not settings.CARROT_ENABLED:
+        return []
+
     session = Session()
     response = session.post(
         url='https://carrotclub.net/office/memlogin_redirect.asp',
-        data={'ID': settings.CARROT_USERID, 'PW': settings.CARROT_PASSWORD, 'x': 5, 'y': 5})
+        data={
+            'ID': settings.CARROT_USERID,
+            'PW': settings.CARROT_PASSWORD,
+            'x': 5,
+            'y': 5})
     soup = BeautifulSoup(response.content, 'html5lib')
     a_elements = soup.find('section', id='panel-1').find_all('a')
     myhorse_links = (x.get('href') for x in a_elements)

@@ -27,11 +27,15 @@ prefix: str = f'/{_get_environment("STAGE")}/NotifyHitokuchi/'
 parameters = _get_parameters(prefix,
                              ['Carrot/UserId',
                               'Carrot/Password',
+                              'Carrot/Enabled',
                               'Yushun/HorseId',
+                              'Yushun/Enabled',
                               'WebhookName'])
 
 CARROT_USERID = parameters['Carrot/UserId']
 CARROT_PASSWORD = parameters['Carrot/Password']
+CARROT_ENABLED = parameters['Carrot/Enabled'].lower() == 'true'
 YUSHUN_HORSE_ID = parameters['Yushun/HorseId']
+YUSHUN_ENABLED = parameters['Yushun/Enabled'].lower() == 'true'
 SQS_URL = _get_environment('SQSURL')
 WEBHOOK_NAME = parameters['WebhookName']
