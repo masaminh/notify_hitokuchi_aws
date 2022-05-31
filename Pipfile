@@ -19,3 +19,6 @@ aws-xray-sdk = "*"
 
 [requires]
 python_version = "3.7"
+
+[scripts]
+build = "bash -c \"pipenv requirements > notify_hitokuchi/requirements.txt && sam build --use-container\""
