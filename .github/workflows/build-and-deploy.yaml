@@ -22,6 +22,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install awscli
           pip install aws-sam-cli
+      - name: Install pipenv
+        run: python -m pip install pipenv
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -29,7 +31,7 @@ jobs:
           role-session-name: NotifyHitokuchi
           aws-region: ap-northeast-1
       - name: Build
-        run: sam build --use-container
+        run: pipenv run build
       - name: Deploy
         if: startsWith(github.ref, 'refs/heads/master')
         run: sam deploy --stack-name notify-hitokuchi --s3-bucket ${{ secrets.AWS_SAM_BUCKET_NAME }} --s3-prefix notify-hitokuchi-prod --capabilities CAPABILITY_IAM --parameter-overrides "Stage=Prod SqsUrl=SlackIncomingWebHookAppProd-QUEUE-URL"
