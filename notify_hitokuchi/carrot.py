@@ -12,6 +12,10 @@ import settings
 logger = logging.getLogger()
 
 
+class ParseError(Exception):
+    pass
+
+
 def get_horse_latest_statuses():
     """キャロットクラブ馬の直近の近況を返す.
 
@@ -39,11 +43,17 @@ def get_horse_latest_statuses():
 
     for link in myhorse_links:
         url = urljoin(response.url, link)
-        last_status = get_horse_latest_status(session, url)
-        logger.info(
-            'carrot: latest_status: url=%s, status_date=%s',
-            url, last_status['status_date'])
-        statuses.append(last_status)
+
+        try:
+            last_status = get_horse_latest_status(session, url)
+        except ParseError as e:
+            logger.warning(f'carrot: parse error: url={url}, message={e}')
+        else:
+            logger.info(
+                'carrot: latest_status: url=%s, status_date=%s',
+                url, last_status['status_date'])
+            statuses.append(last_status)
+
         time.sleep(1)
 
     return statuses
@@ -64,12 +74,27 @@ def get_horse_latest_status(session, url):
 
     response = session.get(url)
     soup = BeautifulSoup(response.content, 'html5lib')
-    status['horse_name'] = soup.find('title').string.split()[0]
-    state_ul = soup.find('ul', class_='KinkyoList')
-    li_elements = state_ul.find_all('li')
-    first_line = li_elements[0].text.split()
-    status['status_date'] = datetime.strptime(first_line[0], '%y/%m/%d').date()
-    status['status'] = str(li_elements[1].string)
+    horse_name_tag = soup.select_one('.umaHead h1')
+
+    if horse_name_tag is None:
+        raise ParseError('not found: ".umaHead h1"')
+
+    status['horse_name'] = horse_name_tag.text
+    li_element_tag = soup.select_one('ul.hose-lst1 > li:first-of-type')
+
+    if li_element_tag is None:
+        raise ParseError('not found: "ul.hose-lst1 > li:first-of-type"')
+
+    first_line_tag = li_element_tag.select_one('h3')
+
+    if first_line_tag is None:
+        raise ParseError('not found: "h3"')
+
+    first_line_string = first_line_tag.text.strip()
+    status['status_date'] = datetime.strptime(
+        first_line_string.split()[0], '%y/%m/%d').date()
+    li_element_tag_strings = list(li_element_tag.strings)
+    status['status'] = li_element_tag_strings[-1].strip()
 
     return status
 
