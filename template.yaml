@@ -11,6 +11,8 @@ Parameters:
     Default: Dev
   SqsUrl:
     Type: String
+  HorsesJsonArn:
+    Type: String
 
 Resources:
   NotifyHitokuchiFunction:
@@ -41,3 +43,9 @@ Resources:
               - ssm:GetParameters
               - sqs:SendMessage
             Resource: "*"
+        - Version: 2012-10-17
+          Statement:
+            Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource: !Ref HorsesJsonArn
