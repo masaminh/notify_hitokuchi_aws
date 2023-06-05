@@ -1,0 +1,16 @@
+{
+    "editor.formatOnSave": true,
+    "python.linting.pylintEnabled": false,
+    "python.analysis.typeCheckingMode": "basic",
+    "python.formatting.autopep8Args": [
+        "--aggressive",
+        "--aggressive"
+    ],
+    "python.analysis.extraPaths": [
+        "notify_hitokuchi"
+    ],
+    "python.linting.flake8Enabled": true,
+    "yaml.schemaStore.enable": false,
+    "yaml.validate": false,
+    
+}
