@@ -4,6 +4,7 @@ import re
 import time
 from datetime import date, datetime
 from urllib.parse import urlencode, urljoin
+from typing import TypeVar, Optional, Dict
 
 import requests
 from bs4 import BeautifulSoup
@@ -30,6 +31,10 @@ def get_horse_latest_statuses(today):
 
     for horseid in settings.YUSHUN_HORSE_ID.split(';'):
         status = get_horse_latest_status(today, horseid)
+
+        if status is None:
+            continue
+
         logger.info(
             'yushun: latest_status: horseid=%s, status_date=%s',
             horseid, status['status_date'])
@@ -39,7 +44,7 @@ def get_horse_latest_statuses(today):
     return statuses
 
 
-def get_horse_latest_status(today, horseid):
+def get_horse_latest_status(today, horseid) -> Optional[Dict]:
     """指定馬の直近の近況情報を返す.
 
     Arguments:
@@ -52,29 +57,56 @@ def get_horse_latest_status(today, horseid):
     """
     result = dict()
 
-    horseno, bornid = horseid.split('-')
-    qs = urlencode({'horseno': horseno, 'bornid': bornid})
-    url = urljoin('http://www.yushun-members.com/news/kiji.cgi', '?' + qs)
-    r = requests.get(url)
-    soup = BeautifulSoup(r.content, 'html5lib')
-    result['horse_name'] = soup.select_one(
-        'tbody tr:nth-child(2) td').string.split()[0]
-    datestr = soup.select_one('tbody tr:nth-child(7) td').string
-    result['status'] = soup.select_one(
-        'tbody tr:nth-child(7) td:nth-child(2)').text
+    try:
+        horseno, bornid = horseid.split('-')
+        qs = urlencode({'horseno': horseno, 'bornid': bornid})
+        url = urljoin('http://www.yushun-members.com/news/kiji.cgi', '?' + qs)
+        logger.info('requesting: %s', url)
+        r = requests.get(url)
+        soup = BeautifulSoup(r.content, 'html5lib')
+        horse_name_tag = not_none(soup.select_one('tbody tr:nth-child(2) td'))
+        result['horse_name'] = not_none(horse_name_tag.string).split()[0]
+        date_str_tag = not_none(soup.select_one('tbody tr:nth-child(7) td'))
+        datestr = not_none(date_str_tag.string)
+        status_tag = not_none(soup.select_one(
+            'tbody tr:nth-child(7) td:nth-child(2)'))
+        result['status'] = status_tag.text
 
-    m = re.fullmatch(r'(\d{1,2})月(\d{1,2})日', datestr)
-    if m:
-        month = int(m.group(1))
-        day = int(m.group(2))
-        year = today.year
-        if month > today.month:
-            year -= 1
-        result['status_date'] = date(year, month, day)
-    else:
-        result['status_date'] = None
+        m = re.fullmatch(r'(\d{1,2})月(\d{1,2})日', datestr)
+        if m:
+            month = int(m.group(1))
+            day = int(m.group(2))
+            year = today.year
+            if month > today.month:
+                year -= 1
+            result['status_date'] = date(year, month, day)
+        else:
+            result['status_date'] = None
+    except Exception as e:
+        logger.warning('yushun: get_horse_latest_status: %s', e)
+        return None
 
     return result
+
+
+T = TypeVar('T')
+
+
+def not_none(value: Optional[T]) -> T:
+    """引数がNone以外であることを保証する. Noneだったら例外発生させる.
+
+    Args:
+        value (Optional[T]): 保証させたい値
+
+    Raises:
+        ValueError: 引数値がNoneだった
+
+    Returns:
+        T: Noneでない値
+    """
+    if value is None:
+        raise ValueError('value is None')
+    return value
 
 
 def main():
