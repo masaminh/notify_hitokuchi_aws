@@ -10,6 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 
 import settings
+import s3
 
 logger = logging.getLogger()
 
@@ -29,7 +30,17 @@ def get_horse_latest_statuses(today):
 
     statuses = []
 
-    for horseid in settings.YUSHUN_HORSE_ID.split(';'):
+    horses = s3.read_json(settings.HORSES_JSON_URI)
+
+    if horses is None or "horses" not in horses:
+        return []
+
+    yushun_infos = [horse["yushun"]
+                    for horse in horses["horses"] if "yushun" in horse]
+    horse_ids = [yushun_info["horseId"]
+                 for yushun_info in yushun_infos if "horseId" in yushun_info]
+
+    for horseid in horse_ids:
         status = get_horse_latest_status(today, horseid)
 
         if status is None:
