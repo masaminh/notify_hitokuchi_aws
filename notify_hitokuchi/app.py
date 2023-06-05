@@ -26,7 +26,7 @@ def lambda_handler(event, context):
     """
     del context
 
-    logger.info('start: event.time=%s', event["time"])
+    logger.info('start: event=%s', event)
 
     today = get_jstdate_from_isoformat(event['time'])
 
@@ -34,8 +34,13 @@ def lambda_handler(event, context):
     carrot_statuses = carrot.get_horse_latest_statuses()
     statuses = yushun_statuses + carrot_statuses
 
+    logger.info('statuses=%s', statuses)
+
     messages = [format_status(status)
                 for status in statuses if status['status_date'] == today]
+
+    logger.info('messages=%s', messages)
+
     if messages:
         sqs.send(settings.SQS_URL, settings.WEBHOOK_NAME, messages)
 
