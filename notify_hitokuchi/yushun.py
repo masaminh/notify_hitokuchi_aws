@@ -46,9 +46,6 @@ def get_horse_latest_statuses(today):
         if status is None:
             continue
 
-        logger.info(
-            'yushun: latest_status: horseid=%s, status_date=%s',
-            horseid, status['status_date'])
         statuses.append(status)
         time.sleep(1)
 
@@ -97,6 +94,10 @@ def get_horse_latest_status(today, horseid) -> Optional[Dict]:
         logger.warning('yushun: get_horse_latest_status: %s', e)
         return None
 
+    logger.info(
+        'yushun: get_horse_latest_status: horseid=%sresult=%s',
+        horseid,
+        result)
     return result
 
 
