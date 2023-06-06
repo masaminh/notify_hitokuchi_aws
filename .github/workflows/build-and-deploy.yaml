@@ -34,4 +34,4 @@ jobs:
         run: pipenv run build
       - name: Deploy
         if: startsWith(github.ref, 'refs/heads/master')
-        run: sam deploy --stack-name notify-hitokuchi --s3-bucket ${{ secrets.AWS_SAM_BUCKET_NAME }} --s3-prefix notify-hitokuchi-prod --capabilities CAPABILITY_IAM --parameter-overrides "Stage=Prod SqsUrl=SlackIncomingWebHookAppProd-QUEUE-URL HorsesJsonArn=${{ secrets.HORSES_JSON_ARN }}" --/no-fail-on-empty-changeset
+        run: sam deploy --stack-name notify-hitokuchi --s3-bucket ${{ secrets.AWS_SAM_BUCKET_NAME }} --s3-prefix notify-hitokuchi-prod --capabilities CAPABILITY_IAM --parameter-overrides "Stage=Prod SqsUrl=SlackIncomingWebHookAppProd-QUEUE-URL HorsesJsonArn=${{ secrets.HORSES_JSON_ARN }}" --no-fail-on-empty-changeset
