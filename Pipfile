@@ -17,7 +17,7 @@ mojimoji = "*"
 aws-xray-sdk = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.11"
 
 [scripts]
 build = "bash -c \"pipenv requirements > notify_hitokuchi/requirements.txt && sam build --use-container\""

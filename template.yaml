@@ -21,7 +21,7 @@ Resources:
       Timeout: 30
       CodeUri: notify_hitokuchi/
       Handler: app.lambda_handler
-      Runtime: python3.7
+      Runtime: python3.11
       Events:
         NotifyHitokuchi:
           Type: Schedule
