@@ -6,7 +6,6 @@ verify_ssl = true
 [dev-packages]
 autopep8 = "*"
 flake8 = "*"
-boto3 = "==1.14.40"
 
 [packages]
 python-dotenv = "*"
@@ -15,9 +14,10 @@ requests = "*"
 html5lib = "*"
 mojimoji = "*"
 aws-xray-sdk = "*"
+boto3 = "*"
 
 [requires]
-python_version = "3.11"
+python_version = "3.12"
 
 [scripts]
 build = "bash -c \"pipenv requirements > notify_hitokuchi/requirements.txt && sam build --use-container\""
